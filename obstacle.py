@@ -6,11 +6,17 @@ from dimensions import Dimensions
 
 class Obstacle:
     def load_values(self):
-        self.x = Dimensions.WIDTH - Dimensions.OBSTACLE_WIDTH
-        self.y = randint(100, 400)
+        x = Dimensions.WIDTH - Dimensions.OBSTACLE_WIDTH
+        y = randint(100, 400)
+        
+        self.image1 = pygame.transform.scale(pygame.image.load('assets/pipe-down.png'), (Dimensions.OBSTACLE_WIDTH, y))
+        self.image2 = pygame.transform.scale(pygame.image.load('assets/pipe-up.png'), (Dimensions.OBSTACLE_WIDTH, 750 - (y - Dimensions.GAP)))
 
-        self.top_obstacle = [self.x, 0, Dimensions.OBSTACLE_WIDTH, self.y]
-        self.bottom_obstacle = [self.x, self.y + Dimensions.GAP, Dimensions.OBSTACLE_WIDTH, Dimensions.HEIGHT - (self.y + Dimensions.GAP) - 120]
+        self.rect1 = self.image1.get_rect()
+        self.rect2 = self.image2.get_rect()
+
+        self.rect1.topleft = (x, 0)           
+        self.rect2.topleft = (x, y + Dimensions.GAP)           
 
     def __init__(self, display):
         self.display = display
@@ -19,9 +25,9 @@ class Obstacle:
         self.score = 0
 
     def update(self):
-        self.top_obstacle[0] -= self.dx 
-        self.bottom_obstacle[0] -= self.dx 
-        if self.top_obstacle[0] < 0: 
+        self.rect1.x -= self.dx 
+        self.rect2.x -= self.dx 
+        if self.rect1.x < 0: 
             self.load_values()
             self.score += 1
 
@@ -32,12 +38,12 @@ class Obstacle:
         self.score = 0
 
     def draw(self):
-        pygame.draw.rect(self.display, 'green', self.top_obstacle)
-        pygame.draw.rect(self.display, 'green', self.bottom_obstacle)
+        self.display.blit(self.image1, self.rect1)   
+        self.display.blit(self.image2, self.rect2)   
 
     def collided_with(self, rect):
-        if self.top_obstacle[0] <= rect[0] <= self.top_obstacle[0] + Dimensions.OBSTACLE_WIDTH or self.top_obstacle[0] <= rect[0] + rect[2] <= self.top_obstacle[0] + Dimensions.OBSTACLE_WIDTH:
-            if rect[1] < self.y or rect[1] + rect[3] > self.y + Dimensions.GAP:
+        if self.rect1.x <= rect[0] <= self.rect2.x + Dimensions.OBSTACLE_WIDTH or self.rect1.x <= rect[0] + rect[2] <= self.rect1.x  + Dimensions.OBSTACLE_WIDTH:
+            if rect[1] < self.rect1.y + Dimensions.GAP or rect[1] + rect[3] >= self.rect2.y:
                 return True        
         return False
         

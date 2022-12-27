@@ -21,7 +21,7 @@ class Game:
         self.run = True
         self.pause = False
         self.clock = pygame.time.Clock()
-        self.fps = 20
+        self.fps = 30
         
         self.background = Background(display)
         self.load()
